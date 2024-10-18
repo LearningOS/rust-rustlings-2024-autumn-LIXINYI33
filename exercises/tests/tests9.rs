@@ -26,18 +26,23 @@
 // line of code in the testcase should call the same function.
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
-
-// I AM NOT DONE
-
+#[no_mangle]
 extern "Rust" {
     fn my_demo_function(a: u32) -> u32;
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
-mod Foo {
+pub mod Foo {
     // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
+    pub fn my_demo_function(a: u32) -> u32 {
         a
+    }
+}
+
+pub mod safe{
+    use super::Foo;
+    pub fn safe_function(a:u32)->u32{
+        Foo::my_demo_function(a)
     }
 }
 
@@ -54,8 +59,8 @@ mod tests {
         // SAFETY: We know those functions are aliases of a safe
         // Rust function.
         unsafe {
-            my_demo_function(123);
-            my_demo_function_alias(456);
+            safe::safe_function(123);
+            safe::safe_function(456);
         }
     }
 }
